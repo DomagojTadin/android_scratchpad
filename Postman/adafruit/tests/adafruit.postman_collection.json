@@ -7,162 +7,206 @@
 	},
 	"item": [
 		{
-			"name": "200_user_data",
-			"event": [
+			"name": "users",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"id": "d4fde307-4f3e-4a31-a477-4e642cef92dc",
-						"exec": [
-							"tests[\"Successful API Call\"] = responseCode.code === 200",
-							"",
-							"if (responseCode.code === 200) {",
-							"    tests[\"correct user returned\"] = responseBody.username === postman.getGlobalVariable(\"username\")",
-							"}",
-							"",
-							"postman.setGlobalVariable(\"userId\", responseBody.id)",
-							"postman.setGlobalVariable(\"defaultGroupId\", responseBody.default_group_id)"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [
-					{
-						"key": "X-AIO-Key",
-						"value": "{{X-AIO-Key}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{URL}}/v2/user",
-					"host": [
-						"{{URL}}"
+					"name": "200_user_data",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d4fde307-4f3e-4a31-a477-4e642cef92dc",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 200",
+									"",
+									"if (responseCode.code === 200) {",
+									"    tests[\"correct user returned\"] = responseBody.username === postman.getGlobalVariable(\"username\")",
+									"}",
+									"",
+									"postman.setGlobalVariable(\"userId\", responseBody.id)",
+									"postman.setGlobalVariable(\"defaultGroupId\", responseBody.default_group_id)"
+								],
+								"type": "text/javascript"
+							}
+						}
 					],
-					"path": [
-						"v2",
-						"user"
-					]
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"value": "{{X-AIO-Key}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/user",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "404_user_data_no_auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "76161fc0-c9d3-4ec5-9398-fdfac3bc6ae7",
+								"exec": [
+									"tests[\"No auth test\"] = responseCode.code === 404",
+									"",
+									"console.log(responseBody)",
+									"",
+									"if (responseCode.code === 404){",
+									"    tests[\"Error response is correct\"] = responseBody === '{\"error\":\"not found - API documentation can be found at https://io.adafruit.com/api/docs\"}'",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"value": "",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/v2/user",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"v2",
+								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "401_user_data_invalid_auth",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "ab5408b2-9207-41be-bd19-fc559b846a95",
+								"exec": [
+									"var crypto = require(\"crypto-js\");",
+									"",
+									"pm.globals.set(\"randomKey\", crypto.MD5(_.random(0, 1000)+\"test\").toString());"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "80872d8d-796f-4495-a277-0d29f5fae58c",
+								"exec": [
+									"tests[\"Invalid auth test\"] = responseCode.code === 401",
+									"",
+									"if (responseCode.code === 401) {",
+									"    tests[\"Response body is correct\"] = responseBody === '{\"error\":\"request failed - invalid API key provided\"}'",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"value": "{{randomKey}}",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/v2/user",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"v2",
+								"user"
+							]
+						}
+					},
+					"response": []
 				}
-			},
-			"response": []
+			]
 		},
 		{
-			"name": "404_user_data_no_auth",
-			"event": [
+			"name": "activities",
+			"item": [
 				{
-					"listen": "test",
-					"script": {
-						"id": "76161fc0-c9d3-4ec5-9398-fdfac3bc6ae7",
-						"exec": [
-							"tests[\"No auth test\"] = responseCode.code === 404",
-							"",
-							"console.log(responseBody)",
-							"",
-							"if (responseCode.code === 404){",
-							"    tests[\"Error response is correct\"] = responseBody === '{\"error\":\"not found - API documentation can be found at https://io.adafruit.com/api/docs\"}'",
-							"}"
+					"name": "200_user_activities",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"value": "{{X-AIO-Key}}",
+								"type": "text"
+							}
 						],
-						"type": "text/javascript"
-					}
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/activities?limit=1",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"activities"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
 				}
-			],
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [
-					{
-						"key": "X-AIO-Key",
-						"value": "",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{URL}}/v2/user",
-					"host": [
-						"{{URL}}"
-					],
-					"path": [
-						"v2",
-						"user"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "401_user_data_invalid_auth",
-			"event": [
-				{
-					"listen": "prerequest",
-					"script": {
-						"id": "ab5408b2-9207-41be-bd19-fc559b846a95",
-						"exec": [
-							"var crypto = require(\"crypto-js\");",
-							"",
-							"pm.globals.set(\"randomKey\", crypto.MD5(Math.floor(Math.random() * 1000)+\"test\").toString());"
-						],
-						"type": "text/javascript"
-					}
-				},
-				{
-					"listen": "test",
-					"script": {
-						"id": "80872d8d-796f-4495-a277-0d29f5fae58c",
-						"exec": [
-							"tests[\"Invalid auth test\"] = responseCode.code === 401",
-							"",
-							"if (responseCode.code === 401) {",
-							"    tests[\"Response body is correct\"] = responseBody === '{\"error\":\"request failed - invalid API key provided\"}'",
-							"}"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"auth": {
-					"type": "noauth"
-				},
-				"method": "GET",
-				"header": [
-					{
-						"key": "X-AIO-Key",
-						"value": "{{randomKey}}",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "raw",
-					"raw": ""
-				},
-				"url": {
-					"raw": "{{URL}}/v2/user",
-					"host": [
-						"{{URL}}"
-					],
-					"path": [
-						"v2",
-						"user"
-					]
-				}
-			},
-			"response": []
+			]
 		}
 	],
 	"auth": {
