@@ -1,0 +1,200 @@
+{
+	"info": {
+		"_postman_id": "a9f79b0a-2ddb-4b26-b919-14d41963c4d7",
+		"name": "adafruit",
+		"description": "Trying out the Adafruit IoT apis.\n{{X-AIO-Key}} auth key is in an external file.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "200_user_data",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "d4fde307-4f3e-4a31-a477-4e642cef92dc",
+						"exec": [
+							"tests[\"Successful API Call\"] = responseCode.code === 200",
+							"",
+							"if (responseCode.code === 200) {",
+							"    tests[\"correct user returned\"] = responseBody.username === postman.getGlobalVariable(\"username\")",
+							"}",
+							"",
+							"postman.setGlobalVariable(\"userId\", responseBody.id)",
+							"postman.setGlobalVariable(\"defaultGroupId\", responseBody.default_group_id)"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-AIO-Key",
+						"value": "{{X-AIO-Key}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{URL}}/v2/user",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"v2",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "404_user_data_no_auth",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "76161fc0-c9d3-4ec5-9398-fdfac3bc6ae7",
+						"exec": [
+							"tests[\"No auth test\"] = responseCode.code === 404",
+							"",
+							"console.log(responseBody)",
+							"",
+							"if (responseCode.code === 404){",
+							"    tests[\"Error response is correct\"] = responseBody === '{\"error\":\"not found - API documentation can be found at https://io.adafruit.com/api/docs\"}'",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-AIO-Key",
+						"value": "",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{URL}}/v2/user",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"v2",
+						"user"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "401_user_data_invalid_auth",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"id": "ab5408b2-9207-41be-bd19-fc559b846a95",
+						"exec": [
+							"var crypto = require(\"crypto-js\");",
+							"",
+							"pm.globals.set(\"randomKey\", crypto.MD5(\"test\").toString());"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"id": "80872d8d-796f-4495-a277-0d29f5fae58c",
+						"exec": [
+							"tests[\"Invalid auth test\"] = responseCode.code === 401",
+							"",
+							"if (responseCode.code === 401) {",
+							"    tests[\"Response body is correct\"] = responseBody === '{\"error\":\"request failed - invalid API key provided\"}'",
+							"}"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "noauth"
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-AIO-Key",
+						"value": "{{randomKey}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{URL}}/v2/user",
+					"host": [
+						"{{URL}}"
+					],
+					"path": [
+						"v2",
+						"user"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "${X-AIO-Key}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "12d3ca8d-085e-4acc-b502-a5015e424c2d",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "b7a856ce-c083-4b10-a599-0e66aa917a1b",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

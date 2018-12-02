@@ -1,0 +1,16 @@
+{
+	"id": "9bfedf55-e3ee-43c8-8c3b-0b7f7ec18824",
+	"name": "Local env",
+	"values": [
+		{
+			"key": "X-AIO-Key",
+			"value": "7f77324c38dd4b058dbf88be2bce8688",
+			"type": "text",
+			"description": "",
+			"enabled": true
+		}
+	],
+	"_postman_variable_scope": "environment",
+	"_postman_exported_at": "2018-12-02T02:39:24.019Z",
+	"_postman_exported_using": "Postman/6.5.2"
+}
