@@ -115,7 +115,7 @@
 						"exec": [
 							"var crypto = require(\"crypto-js\");",
 							"",
-							"pm.globals.set(\"randomKey\", crypto.MD5(\"test\").toString());"
+							"pm.globals.set(\"randomKey\", crypto.MD5(Math.floor(Math.random() * 1000)+\"test\").toString());"
 						],
 						"type": "text/javascript"
 					}
