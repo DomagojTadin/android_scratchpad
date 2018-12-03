@@ -28,6 +28,18 @@
 								],
 								"type": "text/javascript"
 							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7ded3d3c-8f42-4700-9c7d-c50da08c4635",
+								"exec": [
+									"var crypto = require(\"crypto-js\");",
+									"",
+									"pm.globals.set(\"randomKey\", crypto.MD5(_.random(0, 1000)+\"test\").toString());"
+								],
+								"type": "text/javascript"
+							}
 						}
 					],
 					"request": {
@@ -71,7 +83,7 @@
 									"console.log(responseBody)",
 									"",
 									"if (responseCode.code === 404){",
-									"    tests[\"Error response is correct\"] = responseBody === '{\"error\":\"not found - API documentation can be found at https://io.adafruit.com/api/docs\"}'",
+									"    tests[\"Error response is correct\"] = responseBody.has('\"error\":\"not found') ",
 									"}"
 								],
 								"type": "text/javascript"
@@ -95,12 +107,11 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{URL}}/v2/user",
+							"raw": "{{URL}}/user",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"v2",
 								"user"
 							]
 						}
@@ -115,9 +126,7 @@
 							"script": {
 								"id": "ab5408b2-9207-41be-bd19-fc559b846a95",
 								"exec": [
-									"var crypto = require(\"crypto-js\");",
-									"",
-									"pm.globals.set(\"randomKey\", crypto.MD5(_.random(0, 1000)+\"test\").toString());"
+									""
 								],
 								"type": "text/javascript"
 							}
@@ -130,7 +139,7 @@
 									"tests[\"Invalid auth test\"] = responseCode.code === 401",
 									"",
 									"if (responseCode.code === 401) {",
-									"    tests[\"Response body is correct\"] = responseBody === '{\"error\":\"request failed - invalid API key provided\"}'",
+									"    tests[\"Response body is correct\"] = responseBody.has(\"invalid API key provided\")",
 									"}",
 									""
 								],
@@ -155,13 +164,200 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{URL}}/v2/user",
+							"raw": "{{URL}}/user",
 							"host": [
 								"{{URL}}"
 							],
 							"path": [
-								"v2",
 								"user"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200_user_throttle",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d4fde307-4f3e-4a31-a477-4e642cef92dc",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 200",
+									"",
+									"if (responseCode.code === 200) {",
+									"    tests[\"correct throttle data returned\"] = responseBody.has(\"data_rate_limit\") ",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/throttle",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"throttle"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "401_user_throttle_invalid_username",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d4fde307-4f3e-4a31-a477-4e642cef92dc",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 404",
+									"",
+									"if (responseCode.code === 404) {",
+									"    tests[\"Error response is correct\"] = responseBody.has(\"username does not exist\") ",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/testusername/throttle",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"testusername",
+								"throttle"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "404_user_throttle_no_auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d4fde307-4f3e-4a31-a477-4e642cef92dc",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 404",
+									"",
+									"if (responseCode.code === 404) {",
+									"    tests[\"Error response is correct\"] = responseBody.has('\"error\":\"not found') ",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/throttle",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"throttle"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "401_user_throttle_invalid_auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"id": "d4fde307-4f3e-4a31-a477-4e642cef92dc",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 401",
+									"",
+									"if (responseCode.code === 401) {",
+									"    tests[\"Response body is correct\"] = responseBody.has(\"invalid API key provided\")",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{randomKey}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/throttle",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"throttle"
 							]
 						}
 					},
@@ -173,14 +369,165 @@
 			"name": "activities",
 			"item": [
 				{
-					"name": "200_user_activities",
+					"name": "-- TODO: DATA GENERATION REQUESTS FOR QUERY PARAMS --",
 					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": ""
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200_activities",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									"var crypto = require(\"crypto-js\");",
+									"",
+									"pm.globals.set(\"randomKey\", crypto.MD5(_.random(0, 1000)+\"test\").toString());"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "86badf8b-f22d-4dc7-b370-e0e3ad6d24b7",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 200",
+									"",
+									"if (responseCode.code === 200) {",
+									"    var responsebody = JSON.parse(responseBody);",
+									"",
+									"    tests[\"correct number of user activities returned\"] = responsebody.length>1;",
+									"    ",
+									"    tests[\"activities data is returned successfully\"] = _.filter(responsebody, function(value){return value.data.has(\"created_at\")}).length == responsebody.length;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
 						"method": "GET",
 						"header": [
 							{
 								"key": "X-AIO-Key",
 								"value": "{{X-AIO-Key}}",
 								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/activities",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"activities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "404_activities_invalid_username",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/testusername/activities",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"testusername",
+								"activities"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200_activities_qp_limit_1",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "14964617-6a07-4bd3-b9d0-3fbeabaff605",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 200",
+									"",
+									"if (responseCode.code === 200) {",
+									"    var responsebody = JSON.parse(responseBody);",
+									"    tests[\"correct user activity returned\"] = _.size(responsebody)==1",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
 							}
 						],
 						"body": {
@@ -200,6 +547,153 @@
 								{
 									"key": "limit",
 									"value": "1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200_activities_qp_limit_max",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/activities?limit=4",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"activities"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "4"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200_activities_qp_limit_0",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/activities?limit=0",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"activities"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "0"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200_activities_qp_limit_blank",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/activities?limit=",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"activities"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": ""
 								}
 							]
 						}
