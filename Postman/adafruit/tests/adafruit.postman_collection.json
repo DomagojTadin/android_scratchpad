@@ -369,21 +369,6 @@
 			"name": "activities",
 			"item": [
 				{
-					"name": "-- TODO: DATA GENERATION REQUESTS FOR QUERY PARAMS --",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"body": {
-							"mode": "raw",
-							"raw": ""
-						},
-						"url": {
-							"raw": ""
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "200_activities",
 					"event": [
 						{
@@ -392,8 +377,23 @@
 								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
 								"exec": [
 									"var crypto = require(\"crypto-js\");",
+									"var moment = require('moment')",
 									"",
-									"pm.globals.set(\"randomKey\", crypto.MD5(_.random(0, 1000)+\"test\").toString());"
+									"pm.globals.set(\"randomKey\", crypto.MD5(_.random(0, 1000)+\"test\").toString());",
+									"",
+									"",
+									"",
+									"var current_time = moment()",
+									"var tomorrow = moment().add(1, 'd')",
+									"var yesterday = moment().subtract(1, 'd')",
+									"var last_year = moment().subtract(1, 'y')",
+									"var current_time_format = moment().unix(current_time)",
+									"",
+									"postman.setEnvironmentVariable('current_time', current_time)",
+									"postman.setEnvironmentVariable('tomorrow', tomorrow)",
+									"postman.setEnvironmentVariable('yesterday', yesterday)",
+									"postman.setEnvironmentVariable('last_year', last_year)",
+									"postman.setEnvironmentVariable('current_time_format', current_time_format)"
 								],
 								"type": "text/javascript"
 							}
@@ -411,6 +411,10 @@
 									"    tests[\"correct number of user activities returned\"] = responsebody.length>1;",
 									"    ",
 									"    tests[\"activities data is returned successfully\"] = _.filter(responsebody, function(value){return value.data.has(\"created_at\")}).length == responsebody.length;",
+									"    ",
+									"    postman.setEnvironmentVariable(\"activites_records_count\", responsebody.length)",
+									"    ",
+									"    postman.setEnvironmentVariable(\"activites_records_count_max\", responsebody.length+1)",
 									"}"
 								],
 								"type": "text/javascript"
@@ -455,6 +459,20 @@
 								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
 								"exec": [
 									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "06ca249c-0364-443b-aefa-bc710d621ab8",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 404",
+									"",
+									"if (responseCode.code === 404) {",
+									"    tests[\"Error response is correct\"] = responseBody.has(\"username does not exist\") ",
+									"}"
 								],
 								"type": "text/javascript"
 							}
@@ -565,6 +583,24 @@
 								],
 								"type": "text/javascript"
 							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "671187e5-6928-4920-bab2-f8da50845679",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 200",
+									"",
+									"if (responseCode.code === 200) {",
+									"    var responsebody = JSON.parse(responseBody);",
+									"",
+									"    tests[\"correct number of user activities returned\"] = responsebody.length>1;",
+									"    ",
+									"    tests[\"activities data is returned successfully\"] = _.filter(responsebody, function(value){return value.data.has(\"created_at\")}).length == responsebody.length;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
 						}
 					],
 					"request": {
@@ -584,7 +620,7 @@
 							"raw": ""
 						},
 						"url": {
-							"raw": "{{URL}}/{{username}}/activities?limit=4",
+							"raw": "{{URL}}/{{username}}/activities?limit={{activites_records_count_max}}",
 							"host": [
 								"{{URL}}"
 							],
@@ -595,7 +631,7 @@
 							"query": [
 								{
 									"key": "limit",
-									"value": "4"
+									"value": "{{activites_records_count_max}}"
 								}
 							]
 						}
@@ -611,6 +647,21 @@
 								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
 								"exec": [
 									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "a8eab468-e877-4b93-8483-f360d5dc554f",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 401",
+									"",
+									"if (responseCode.code === 401) {",
+									"    var responsebody = JSON.parse(responseBody);",
+									"    tests[\"correct error message\"] = responsebody.body == 'limit must be greater than 0'",
+									"}"
 								],
 								"type": "text/javascript"
 							}
@@ -663,6 +714,24 @@
 								],
 								"type": "text/javascript"
 							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "1df38b77-1cf7-4085-b6d1-bdf6588f239f",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 200",
+									"",
+									"if (responseCode.code === 200) {",
+									"    var responsebody = JSON.parse(responseBody);",
+									"",
+									"    tests[\"correct number of user activities returned\"] = responsebody.length>1;",
+									"    ",
+									"    tests[\"activities data is returned successfully\"] = _.filter(responsebody, function(value){return value.data.has(\"created_at\")}).length == responsebody.length;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
 						}
 					],
 					"request": {
@@ -694,6 +763,865 @@
 								{
 									"key": "limit",
 									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "401_activities_qp_limit_-1",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "d4ebf352-d695-438a-87a1-d6e750900497",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 401",
+									"",
+									"if (responseCode.code === 401) {",
+									"    var responsebody = JSON.parse(responseBody);",
+									"    tests[\"correct error message\"] = responsebody.body == 'limit must be greater than 0'",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/activities?limit=-1",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"activities"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "-1"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "404_activities_qp_start_time",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "14964617-6a07-4bd3-b9d0-3fbeabaff605",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 200",
+									"",
+									"if (responseCode.code === 200) {",
+									"    var responsebody = JSON.parse(responseBody);",
+									"    tests[\"correct user activity returned\"] = _.size(responsebody)==1",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/activities?start_time={{current_time}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"activities"
+							],
+							"query": [
+								{
+									"key": "start_time",
+									"value": "{{current_time}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "401_activities_qp_start_time_invalid",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "14964617-6a07-4bd3-b9d0-3fbeabaff605",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 401",
+									"",
+									"if (responseCode.code === 401) {",
+									"    var responsebody = JSON.parse(responseBody);",
+									"    tests[\"correct invalid format error message\"] = responsebody.body === 'invalid date format'",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/activities?start_time={{current_time_format}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"activities"
+							],
+							"query": [
+								{
+									"key": "start_time",
+									"value": "{{current_time_format}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200_activities_qp_start_time_blank",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "14964617-6a07-4bd3-b9d0-3fbeabaff605",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 200",
+									"",
+									"if (responseCode.code === 200) {",
+									"    var responsebody = JSON.parse(responseBody);",
+									"",
+									"    tests[\"correct number of user activities returned\"] = responsebody.length>1;",
+									"    ",
+									"    tests[\"activities data is returned successfully\"] = _.filter(responsebody, function(value){return value.data.has(\"created_at\")}).length == responsebody.length;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/activities?start_time=",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"activities"
+							],
+							"query": [
+								{
+									"key": "start_time",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "404_activities_qp_start_time_future",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "14964617-6a07-4bd3-b9d0-3fbeabaff605",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 404",
+									"",
+									"if (responseCode.code === 404) {",
+									"    var responsebody = JSON.parse(responseBody);",
+									"    tests[\"correct error message\"] = responsebody.body === 'start time cannot be in the future'",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/activities?start_time={{tomorrow}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"activities"
+							],
+							"query": [
+								{
+									"key": "start_time",
+									"value": "{{tomorrow}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200_activities_qp_start_time_past",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "14964617-6a07-4bd3-b9d0-3fbeabaff605",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 200",
+									"",
+									"if (responseCode.code === 200) {",
+									"    var responsebody = JSON.parse(responseBody);",
+									"",
+									"    tests[\"correct number of user activities returned\"] = responsebody.length>1;",
+									"    ",
+									"    tests[\"activities data is returned successfully\"] = _.filter(responsebody, function(value){return value.data.has(\"created_at\")}).length == responsebody.length;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/activities?start_time={{yesterday}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"activities"
+							],
+							"query": [
+								{
+									"key": "start_time",
+									"value": "{{yesterday}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200_activities_qp_end_time",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "14964617-6a07-4bd3-b9d0-3fbeabaff605",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 200",
+									"",
+									"if (responseCode.code === 200) {",
+									"    var responsebody = JSON.parse(responseBody);",
+									"",
+									"    tests[\"correct number of user activities returned\"] = responsebody.length>1;",
+									"    ",
+									"    tests[\"activities data is returned successfully\"] = _.filter(responsebody, function(value){return value.data.has(\"created_at\")}).length == responsebody.length;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/activities?end_time={{current_time}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"activities"
+							],
+							"query": [
+								{
+									"key": "end_time",
+									"value": "{{current_time}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "401_activities_qp_end_time_invalid",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "14964617-6a07-4bd3-b9d0-3fbeabaff605",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 401",
+									"",
+									"if (responseCode.code === 401) {",
+									"    var responsebody = JSON.parse(responseBody);",
+									"    tests[\"correct invalid format error message\"] = responsebody.body === 'invalid date format'",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/activities?end_time={{current_time_format}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"activities"
+							],
+							"query": [
+								{
+									"key": "end_time",
+									"value": "{{current_time_format}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200_activities_qp_end_time_blank",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "14964617-6a07-4bd3-b9d0-3fbeabaff605",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 200",
+									"",
+									"if (responseCode.code === 200) {",
+									"    var responsebody = JSON.parse(responseBody);",
+									"",
+									"    tests[\"correct number of user activities returned\"] = responsebody.length>1;",
+									"    ",
+									"    tests[\"activities data is returned successfully\"] = _.filter(responsebody, function(value){return value.data.has(\"created_at\")}).length == responsebody.length;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/activities?end_time=",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"activities"
+							],
+							"query": [
+								{
+									"key": "end_time",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200_activities_qp_end_time_future",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "14964617-6a07-4bd3-b9d0-3fbeabaff605",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 200",
+									"",
+									"if (responseCode.code === 200) {",
+									"    var responsebody = JSON.parse(responseBody);",
+									"",
+									"    tests[\"correct number of user activities returned\"] = responsebody.length>1;",
+									"    ",
+									"    tests[\"activities data is returned successfully\"] = _.filter(responsebody, function(value){return value.data.has(\"created_at\")}).length == responsebody.length;",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/activities?end_time={{tomorrow}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"activities"
+							],
+							"query": [
+								{
+									"key": "end_time",
+									"value": "{{tomorrow}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "404_activities_qp_end_time_past",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "14964617-6a07-4bd3-b9d0-3fbeabaff605",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 404",
+									"",
+									"if (responseCode.code === 404) {",
+									"    var responsebody = JSON.parse(responseBody);",
+									"    tests[\"correct error message\"] = responsebody.body === 'end time cannot be in the past'",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/activities?end_time={{yesterday}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"activities"
+							],
+							"query": [
+								{
+									"key": "end_time",
+									"value": "{{yesterday}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "401_activities_qp_start_time_after_end_time",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "14964617-6a07-4bd3-b9d0-3fbeabaff605",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 401",
+									"",
+									"if (responseCode.code === 401) {",
+									"    var responsebody = JSON.parse(responseBody);",
+									"    tests[\"correct invalid format error message\"] = responsebody.body === 'start time cannot be after end time'",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/activities?start_time={{yesterday}}&end_time={{tomorrow}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"activities"
+							],
+							"query": [
+								{
+									"key": "start_time",
+									"value": "{{yesterday}}"
+								},
+								{
+									"key": "end_time",
+									"value": "{{tomorrow}}"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200_activities_qp_limit_start_time_end_time",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "14964617-6a07-4bd3-b9d0-3fbeabaff605",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 200",
+									"",
+									"if (responseCode.code === 200) {",
+									"    var responsebody = JSON.parse(responseBody);",
+									"    tests[\"correct user activity returned\"] = _.size(responsebody)==1",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/activities?start_time={{last_year}}&end_time={{current_time}}&limit=1",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"activities"
+							],
+							"query": [
+								{
+									"key": "start_time",
+									"value": "{{last_year}}"
+								},
+								{
+									"key": "end_time",
+									"value": "{{current_time}}"
+								},
+								{
+									"key": "limit",
+									"value": "1"
 								}
 							]
 						}
