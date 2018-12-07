@@ -1629,6 +1629,873 @@
 					"response": []
 				}
 			]
+		},
+		{
+			"name": "feeds",
+			"item": [
+				{
+					"name": "200_feeds",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "86badf8b-f22d-4dc7-b370-e0e3ad6d24b7",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 200",
+									"",
+									"if (responseCode.code === 200) {",
+									"    var responsebody = JSON.parse(responseBody);",
+									"    ",
+									"    postman.setEnvironmentVariable(\"feedKey\", responsebody[0].key)",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/feeds",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"feeds"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "404_feeds_invalid_username",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "86badf8b-f22d-4dc7-b370-e0e3ad6d24b7",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 404",
+									"",
+									"if (responseCode.code === 404) {",
+									"    tests[\"Response body is correct\"] = responseBody.has('not found - that username does not exist')",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/testUsername/feeds",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"testUsername",
+								"feeds"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "404_feeds_no_auth",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "86badf8b-f22d-4dc7-b370-e0e3ad6d24b7",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 404",
+									"",
+									"if (responseCode.code === 404) {",
+									"    tests[\"Error response is correct\"] = responseBody.has('\"error\":\"not found')",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/feeds",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"feeds"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "401_feeds_invalid_auth",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "86badf8b-f22d-4dc7-b370-e0e3ad6d24b7",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 401",
+									"",
+									"if (responseCode.code === 401) {",
+									"    tests[\"Response body is correct\"] = responseBody.has(\"invalid API key provided\")",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{randomKey}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/feeds",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"feeds"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200_create_feed",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									"var moment = require('moment')",
+									"",
+									"postman.setEnvironmentVariable('testFeedTime', String(moment().valueOf()))",
+									"postman.setEnvironmentVariable('randomKey', String(_.random(0,100000)))"
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "86badf8b-f22d-4dc7-b370-e0e3ad6d24b7",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 201",
+									"",
+									"if (responseCode.code === 201) {",
+									"    var responsebody = JSON.parse(responseBody);",
+									"",
+									"    tests[\"Response Username is correct\"] = ",
+									"    responsebody.username === postman.getEnvironmentVariable('username')",
+									"    ",
+									"    ",
+									"    console.log(responsebody.name)",
+									"    console.log('testFeed+'+String(postman.getEnvironmentVariable('testFeedTime')))",
+									"    tests[\"Response Name is correct\"] = responsebody.name === 'testFeed+'+String(postman.getEnvironmentVariable('testFeedTime'))",
+									"",
+									"    postman.setEnvironmentVariable(\"feedNewKey\", responsebody.key)",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"name\": \"testFeed+{{testFeedTime}}\",\n\"key\": \"{{randomKey}}\",\n\"description\": \"testFeedCount\",\n\"license\": \"testLicense\"\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/feeds",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"feeds"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "404_create_feed_invalid_username",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "86badf8b-f22d-4dc7-b370-e0e3ad6d24b7",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 404",
+									"",
+									"if (responseCode.code === 404) {",
+									"    tests[\"Response body is correct\"] = responseBody.has('not found - that username does not exist')",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"name\": \"testFeed+{{testFeedTime}}\",\n\"key\": \"{{randomKey}}\",\n\"description\": \"testFeedCount\",\n\"license\": \"testLicense\"\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/testUsername/feeds",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"testUsername",
+								"feeds"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "404_create_feed_blank_name",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "86badf8b-f22d-4dc7-b370-e0e3ad6d24b7",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 400",
+									"",
+									"if (responseCode.code === 400) {",
+									"    tests[\"response body is correct\"] = responseBody.has(\"Name can't be blank\")",
+									"    && responseBody.has(\"Key can't be blank\")",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"name\": \"\",\n\"key\": \"{{randomKey}}\",\n\"description\": \"testFeedCount\",\n\"license\": \"testLicense\"\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/feeds",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"feeds"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "404_create_feed_no_auth",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "86badf8b-f22d-4dc7-b370-e0e3ad6d24b7",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 404",
+									"",
+									"if (responseCode.code === 404) {",
+									"    tests[\"Error response is correct\"] = responseBody.has('\"error\":\"not found')",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": ""
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"name\": \"testFeed+{{testFeedTime}}\",\n\"key\": \"{{randomKey}}\",\n\"description\": \"testFeedCount\",\n\"license\": \"testLicense\"\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/feeds",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"feeds"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "401_create_feed_invalid_auth",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "86badf8b-f22d-4dc7-b370-e0e3ad6d24b7",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 401",
+									"",
+									"if (responseCode.code === 401) {",
+									"    tests[\"Response body is correct\"] = responseBody.has(\"invalid API key provided\")",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{randomKey}}"
+							},
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\"name\": \"\",\n\"key\": \"{{randomKey}}\",\n\"description\": \"testFeedCount\",\n\"license\": \"testLicense\"\n}"
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/feeds",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"feeds"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200_delete_feed",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "86badf8b-f22d-4dc7-b370-e0e3ad6d24b7",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 200",
+									"",
+									"if (responseCode.code === 200) {",
+									"        var responsebody = JSON.parse(responseBody);",
+									"    ",
+									"    tests[\"Successful API Call\"] = responsebody.key === postman.getEnvironmentVariable('feedNewKey')",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/feeds/{{feedNewKey}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"feeds",
+								"{{feedNewKey}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "404_delete_feed_no_auth",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "86badf8b-f22d-4dc7-b370-e0e3ad6d24b7",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 404",
+									"",
+									"if (responseCode.code === 404) {",
+									"    tests[\"Error response is correct\"] = responseBody.has('\"error\":\"not found')",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": ""
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/feeds/{{feedNewKey}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"feeds",
+								"{{feedNewKey}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "401_delete_feed_invalid_auth",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "86badf8b-f22d-4dc7-b370-e0e3ad6d24b7",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 401",
+									"",
+									"if (responseCode.code === 401) {",
+									"    tests[\"Response body is correct\"] = responseBody.has(\"invalid API key provided\")",
+									"}",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{randomKey}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/feeds/{{feedNewKey}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"feeds",
+								"{{feedNewKey}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200_delete_feed_invalid_feed_key",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "86badf8b-f22d-4dc7-b370-e0e3ad6d24b7",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 404",
+									"",
+									"if (responseCode.code === 404) {",
+									"",
+									"    tests[\"response body is correct\"] = responseBody.has(\"not found - There is no feed with the key '\"+String(postman.getEnvironmentVariable('feedNewKey')))",
+									"    ",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/feeds/{{feedNewKey}}",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"feeds",
+								"{{feedNewKey}}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "200_verify_feeds",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"id": "7b571652-ea85-4b66-bef8-a1aabe901653",
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "test",
+							"script": {
+								"id": "86badf8b-f22d-4dc7-b370-e0e3ad6d24b7",
+								"exec": [
+									"tests[\"Successful API Call\"] = responseCode.code === 200",
+									"",
+									"if (responseCode.code === 200) {",
+									"    var responsebody = JSON.parse(responseBody);",
+									"    ",
+									"    tests[\"Correct feeds are available\"] = responseBody.has(postman.getEnvironmentVariable(\"feedNewKey\")) === false",
+									"    ",
+									"    postman.setEnvironmentVariable(\"feedKey\", responsebody.key)",
+									"}"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "GET",
+						"header": [
+							{
+								"key": "X-AIO-Key",
+								"type": "text",
+								"value": "{{X-AIO-Key}}"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "{{URL}}/{{username}}/feeds",
+							"host": [
+								"{{URL}}"
+							],
+							"path": [
+								"{{username}}",
+								"feeds"
+							]
+						}
+					},
+					"response": []
+				}
+			]
 		}
 	],
 	"auth": {
