@@ -1,4 +1,3 @@
-import io.appium.java_client.AppiumDriver;
 import org.openqa.selenium.remote.*;
 
 import java.net.MalformedURLException;
@@ -7,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 
 public class AppiumConfig {
 
-    public void setUp() throws MalformedURLException {
+    public void setUp(){
 
         DesiredCapabilities capabilities = new DesiredCapabilities();
 
