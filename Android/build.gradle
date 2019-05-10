@@ -27,7 +27,6 @@ dependencies {
 
 test{
     useTestNG()
-    useDefaultListeners = true
 }
 
 intellij {
