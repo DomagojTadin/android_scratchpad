@@ -1,0 +1,3 @@
+{
+  "mongoURI": "mongodb+srv://domagojtadin:domagoj1@tadincluster-splsc.mongodb.net/test?retryWrites=true&w=majority"
+}
