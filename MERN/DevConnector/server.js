@@ -4,6 +4,9 @@ const app = express();
 
 connectdb();
 
+//Initialize express' bodyparser
+app.use(express.json({ extended: false }));
+
 app.get("/", (req, res) => res.send("API running"));
 
 // define routes
