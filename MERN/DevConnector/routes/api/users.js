@@ -3,10 +3,11 @@ const router = express.Router();
 const gravatar = require("gravatar");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcryptjs");
-const config = require("config");
 const { check, validationResult } = require("express-validator/check");
 
 //0. for some reason we have to /../ navigate back up the directory tree to get the User model
+//   but this is not necessary for the config directory?
+const config = require("config");
 const Users = require("../../models/User");
 
 // @route  POST api/users
@@ -105,6 +106,7 @@ router.post(
 
       // 16. Call the JWT library's .sign() method
       //     it takes the payload, a secret, some settings (expiry), and a callback
+      //     the secret lives under the config directory, in the default.json file... not sure how .get() works here
       //     not sure why we're not using the await keyword here instead of the callback, though
       //     res.json({key}) will return the key:value in the response body
       jwt.sign(
